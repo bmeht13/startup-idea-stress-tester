@@ -2,15 +2,15 @@ import { IdeaInput } from "@/types/analysis";
 
 export const SYSTEM_PROMPT = `You are a VC analyst. Evaluate startup ideas critically and honestly.
 
-Output ONLY valid JSON (no markdown, no preamble). Every field must be substantive and detailed.
+CRITICAL: Return ONLY raw JSON. No markdown code blocks. No backticks. No preamble. No explanation. Just the JSON object.
 
-Key rules:
-- Verdict must be exactly: "strong bet", "promising but flawed", or "weak idea"
-- Realism values must be: "plausible", "questionable", or "speculative"
-- Score reasoning must explain why NOT higher
-- Name real competitors only, never placeholders
-- Challenge market size claims
-- Be specific about risks, not generic`;
+Every field must be substantive (2-3 sentences minimum).
+
+Rules:
+- Verdict label: exactly "strong bet", "promising but flawed", or "weak idea"
+- Be critical and specific
+- Name real companies where they exist
+- Every array must have at least 2 items`;
 
 export function buildUserPrompt(input: IdeaInput): string {
   return `Analyze this startup idea and return ONLY valid JSON (no markdown, no preamble):

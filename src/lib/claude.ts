@@ -29,9 +29,15 @@ export async function analyzeIdea(input: IdeaInput): Promise<AnalysisResult> {
     throw new Error("Unexpected response type from Claude");
   }
 
+  // Strip markdown code blocks if present
+  let jsonText = content.text.trim();
+  if (jsonText.startsWith("```")) {
+    jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+
   let parsed: unknown;
   try {
-    parsed = JSON.parse(content.text);
+    parsed = JSON.parse(jsonText);
   } catch {
     throw new Error(
       `Claude returned invalid JSON: ${content.text.substring(0, 200)}`
