@@ -13,76 +13,50 @@ Key rules:
 - Be specific about risks, not generic`;
 
 export function buildUserPrompt(input: IdeaInput): string {
-  return `Evaluate the following startup idea:
+  return `Analyze this startup idea and return ONLY valid JSON (no markdown, no preamble):
 
-IDEA NAME: ${input.name}
+IDEA: ${input.name}
 DESCRIPTION: ${input.description}
 TARGET USERS: ${input.targetUsers}
 GEOGRAPHY: ${input.geography}
-MONETIZATION STRATEGY: ${input.monetization ?? "Not specified"}
+MONETIZATION: ${input.monetization ?? "Not specified"}
 STAGE: ${input.stage}
 
-Return your complete analysis as a single JSON object matching this exact schema:
-
+Return exactly this JSON structure:
 {
-  "coreDecomposition": {
-    "coreProblem": "string",
-    "currentAlternatives": ["string"],
-    "valueProposition": "string",
-    "keyAssumptions": [
-      { "assumption": "string", "realism": "plausible|questionable|speculative", "rationale": "string" }
-    ]
-  },
-  "marketAnalysis": {
-    "tam": { "estimate": "string", "methodology": "string" },
-    "demandFrequency": "daily|weekly|monthly|occasional|one-time",
-    "willingnessToPaySignals": "string",
-    "marketType": "emerging|fragmented|saturated|monopolized",
-    "marketTypeRationale": "string"
-  },
-  "businessModel": {
-    "revenueStreams": ["string"],
-    "unitEconomicsOutlook": "string",
-    "scalabilityAssessment": "string",
-    "monetizationRisks": ["string"]
-  },
-  "competitiveLandscape": {
-    "competitors": [
-      { "name": "string", "type": "direct|substitute|incumbent", "threat": "high|medium|low", "gap": "string" }
-    ],
-    "moatPotential": "string",
-    "incumbentVulnerability": "string"
-  },
-  "executionDifficulty": {
-    "technicalComplexity": "string",
-    "regulatoryRisks": ["string"],
-    "distributionChallenge": "string",
-    "capitalIntensity": "low|medium|high|very-high",
-    "criticalBottlenecks": ["string"]
-  },
-  "failureAnalysis": {
-    "topFailureReasons": ["string"],
-    "silentKillers": [{ "risk": "string", "explanation": "string" }],
-    "blindSpots": ["string"],
-    "overestimatedAdvantages": ["string"]
-  },
-  "strategicInsights": {
-    "suggestedImprovements": ["string"],
-    "pivotOptions": ["string"],
-    "entryWedge": "string",
-    "conditionsForVentureScale": "string"
-  },
-  "scores": {
-    "marketAttractiveness": { "value": 0-10, "reasoning": "string explaining why NOT higher" },
-    "businessModelStrength": { "value": 0-10, "reasoning": "string explaining why NOT higher" },
-    "executionFeasibility": { "value": 0-10, "reasoning": "string explaining why NOT higher" },
-    "defensibility": { "value": 0-10, "reasoning": "string explaining why NOT higher" }
-  },
   "verdict": {
     "label": "strong bet|promising but flawed|weak idea",
-    "summary": "string",
-    "primaryConcern": "string",
-    "bestCaseScenario": "string"
+    "reasoning": "Detailed verdict explanation"
+  },
+  "market": {
+    "opportunity": "Market opportunity description",
+    "tam": "Total addressable market estimate",
+    "demand": "Demand frequency and patterns",
+    "risks": ["Risk 1", "Risk 2"]
+  },
+  "business": {
+    "model": "Business model description",
+    "monetization": "How it makes money",
+    "scalability": "Scalability assessment"
+  },
+  "execution": {
+    "difficulty": "low|medium|high",
+    "challenges": ["Challenge 1", "Challenge 2"]
+  },
+  "competition": {
+    "landscape": "Competitive landscape analysis",
+    "differentiators": ["Differentiator 1", "Differentiator 2"]
+  },
+  "recommendations": {
+    "strengths": ["Strength 1", "Strength 2"],
+    "concerns": ["Concern 1", "Concern 2"],
+    "improvements": ["Improvement 1", "Improvement 2"]
+  },
+  "scores": {
+    "market": 0-10,
+    "business": 0-10,
+    "execution": 0-10,
+    "overall": 0-10
   }
 }`;
 }
