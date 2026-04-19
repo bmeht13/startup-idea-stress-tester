@@ -14,7 +14,7 @@ const client = new Anthropic({
 export async function analyzeIdea(input: IdeaInput): Promise<AnalysisResult> {
   const message = await client.messages.create({
     model: "claude-opus-4-5",
-    max_tokens: 4096,
+    max_tokens: 8192,
     system: SYSTEM_PROMPT,
     messages: [
       {
