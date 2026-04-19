@@ -1,29 +1,27 @@
 # Startup Idea Stress Tester
 
-A web-based tool that evaluates startup ideas with deep, structured, critical VC/consultant-style analysis using Claude AI.
+A web-based tool that evaluates startup ideas with rigorous, critical VC-style analysis using Claude AI.
 
 ## Overview
 
-This tool applies rigorous, honest analysis to startup ideas instead of generic validation. It evaluates ideas across nine critical dimensions:
+This tool provides honest, evidence-based feedback on startup ideas instead of generic validation. Submit a startup concept (6 fields) and get back a structured analysis with:
 
-1. **Core Decomposition** — Problem, alternatives, value prop, and key assumptions
-2. **Market Analysis** — TAM, demand frequency, willingness to pay, market type
-3. **Business Model** — Revenue streams, unit economics, scalability, monetization risks
-4. **Competitive Landscape** — Direct competitors, substitutes, incumbents, moat potential
-5. **Execution Difficulty** — Technical complexity, regulatory, distribution, capital intensity
-6. **Failure Analysis** — Top failure reasons, silent killers, blind spots, overestimated advantages
-7. **Strategic Insights** — Improvements, pivots, entry wedge, conditions for venture scale
-8. **Scores** — 0–10 ratings with reasoning for market attractiveness, business model strength, execution feasibility, defensibility
-9. **Verdict** — "strong bet," "promising but flawed," or "weak idea" with full explanation
+- **Verdict** — strong bet, promising but flawed, or weak idea
+- **Market Analysis** — opportunity, TAM, demand patterns, market risks
+- **Business Assessment** — model, monetization strategy, scalability
+- **Execution Difficulty** — feasibility level and critical challenges
+- **Competitive Landscape** — market analysis and key differentiators
+- **Recommendations** — strengths, concerns, and concrete improvements
+- **Scores** — 0–10 ratings for market, business, execution, overall
 
 ## Quick Start
 
 ### 1. Add Your API Key
 
-Edit `.env.local`:
+Create `.env.local`:
 
-```
-ANTHROPIC_API_KEY=sk-ant-YOUR_ACTUAL_KEY_HERE
+```bash
+ANTHROPIC_API_KEY=sk-ant-YOUR_KEY_HERE
 ```
 
 Get your key from [console.anthropic.com](https://console.anthropic.com).
@@ -31,6 +29,7 @@ Get your key from [console.anthropic.com](https://console.anthropic.com).
 ### 2. Run
 
 ```bash
+npm install
 npm run dev
 ```
 
@@ -38,80 +37,120 @@ Open **http://localhost:3000**
 
 ## How It Works
 
-1. Submit a startup idea (6 form fields)
-2. Claude analyzes using a specialized VC analyst persona
-3. Results render with all 9 sections, 4 scores, verdict
-4. No data storage — session-only
+1. Submit your startup idea (name, description, target users, geography, monetization strategy, stage)
+2. Claude Opus 4.5 analyzes it with a 20+ year VC analyst persona
+3. Analysis returns as structured JSON
+4. Dashboard renders all sections with color-coded verdict banner and numeric scores
+5. No data stored—results live only in your browser session
 
 ## Tech Stack
 
-- Next.js 14 (App Router)
-- TypeScript
-- Tailwind CSS
-- Claude Opus 4.5
-- Zod validation
-
-## Features
-
-- **Verdict banner** — colored by verdict (green/amber/red)
-- **Score rings** — SVG progress indicators, color-graded
-- **Visual hierarchy** — 2-column grid, full-width insights section
-- **Loading state** — cycles through progress labels
-- **Responsive design** — mobile-friendly
+- **Next.js 14** (App Router) for frontend + serverless API
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Claude Opus 4.5** for AI analysis
+- **Zod** for runtime JSON schema validation
+- **React** for interactive UI
 
 ## Key Design Decisions
 
 ### Analytical Rigor
-- Score reasoning explains why NOT higher (adversarial framing)
-- Competitors must be named companies (no placeholders)
-- Failure analysis includes "silent killers"
-- Silence on competition = red flag
+- Score reasoning explains **why NOT higher** (adversarial framing prevents inflated scores)
+- Competitor analysis uses **named real companies** (no placeholders)
+- Monetization gaps are flagged as **severe risks**
+- Silence on competitive landscape = red flag, not a moat
 
-### Prompt Engineering
-- System prompt enforces VC analyst persona
-- Internal chain-of-thought without exposing it
-- Zod validates JSON to catch hallucinations
-- Max tokens 4096 for substantive output
+### Architecture
+- **API key stays server-side** — never exposed to browser
+- **No database** — stateless, session-only results
+- **Validation on two layers** — field validation in form + Zod schema validation on API response
+- **Claude response handling** — automatically strips markdown code blocks if Claude wraps JSON
 
 ## Project Structure
 
 ```
 src/
 ├── app/
-│   ├── page.tsx                 # Main page
-│   └── api/analyze/route.ts     # Claude API handler
+│   ├── page.tsx              # Main page (form + results toggle)
+│   ├── layout.tsx            # Root layout + metadata
+│   ├── globals.css           # Tailwind + theme
+│   └── api/analyze/route.ts  # POST /api/analyze — Claude integration
 ├── components/
-│   ├── IdeaForm.tsx
-│   ├── ResultsDashboard.tsx
-│   ├── sections/                # 9 analysis components
-│   └── ui/                      # Primitives
+│   ├── IdeaForm.tsx          # 6-field input form
+│   ├── ResultsDashboard.tsx  # Analysis output (all sections)
+│   └── ui/                   # Reusable UI primitives (Card, Badge, Loading, Error)
 ├── lib/
-│   ├── claude.ts                # Anthropic client
-│   ├── prompts.ts               # Claude prompts
-│   ├── schema.ts                # Zod schema
-│   └── utils.ts
+│   ├── claude.ts             # Anthropic SDK wrapper + analyzeIdea()
+│   ├── prompts.ts            # System + user prompts
+│   └── schema.ts             # Zod schema for AnalysisResult
 └── types/
-    └── analysis.ts              # Interfaces
+    └── analysis.ts           # TypeScript interfaces
 ```
 
 ## Performance
 
-- API response: 20–40 seconds (Claude Opus)
-- First load: ~2 seconds
-- No caching (stateless)
+- **API response:** 20–40 seconds (Claude Opus reasoning time)
+- **First page load:** ~2 seconds
+- **No caching:** Stateless — each request re-analyzes
+- **Timeout:** 60 seconds on API route
 
 ## Deployment
 
-Vercel, Railway, or any Node.js host. Set `ANTHROPIC_API_KEY` env var.
+Works on Vercel, Railway, Render, AWS Amplify, or any Node.js host.
+
+**Required:**
+- Set `ANTHROPIC_API_KEY` environment variable in hosting dashboard
+- Run `npm run build` locally to verify production build succeeds
+
+**Optional:**
+- Use custom domain
+- Add rate limiting if exposed publicly
+- Monitor Anthropic API usage and costs
 
 ## Troubleshooting
 
-**"Invalid x-api-key"** — Your `.env.local` key is incomplete or wrong. Get a fresh key from console.anthropic.com.
+**"Invalid x-api-key"**
+- Your API key is incomplete or incorrect
+- Get a fresh key from [console.anthropic.com](https://console.anthropic.com)
+- Make sure .env.local exists locally (never commit it)
 
-**"Analysis took too long"** — Claude is slow. Try again. Route timeout is 60 seconds.
+**"Analysis took too long"**
+- Claude is working normally—20–40 seconds is typical
+- API has 60-second timeout
+- Check Anthropic API status if consistently failing
 
-**Build errors** — Run `npm install` to ensure all dependencies are present.
+**"Claude returned invalid JSON"**
+- Claude occasionally returns malformed JSON
+- Check browser DevTools → Network → /api/analyze response
+- If it shows markdown-wrapped JSON, the app's markdown stripper should handle it
+- If it's still invalid, review the system prompt in src/lib/prompts.ts
+
+**Build errors**
+- Run `npm install` to ensure all dependencies
+- Check TypeScript errors: `npm run type-check`
+- Verify src/types/analysis.ts exports AnalysisResult
+
+## Development
+
+```bash
+npm run dev        # Start dev server (localhost:3000)
+npm run build      # Production build
+npm run type-check # TypeScript check
+npm run lint       # ESLint
+```
+
+## How to Contribute
+
+1. Review CLAUDE.md for architecture and constraints
+2. Make changes in a feature branch
+3. Test with `npm run build` and manual testing
+4. Use semantic commit messages (feat, fix, docs, chore)
+5. Push to GitHub and create a PR
+
+## License
+
+MIT
 
 ---
 
-**Next steps:** Add your API key to `.env.local` and run `npm run dev` 🚀
+**Built with Claude AI.** Get your API key at [console.anthropic.com](https://console.anthropic.com).
